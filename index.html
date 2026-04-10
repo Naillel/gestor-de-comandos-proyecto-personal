@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VueGen — Inicializador de proyectos Vue</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f; --surface: #13131c; --surface2: #1c1c2a;
+  --border: #2a2a3d; --border2: #3a3a55;
+  --accent: #6c63ff; --accent2: #42d9c8;
+  --text: #f0eeff; --text2: #9090b0; --text3: #5a5a7a;
+  --mono: 'DM Mono', monospace; --display: 'Syne', sans-serif; --body: 'DM Sans', sans-serif;
+  --radius: 12px; --radius-sm: 8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:15px;line-height:1.6;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(108,99,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(108,99,255,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;top:-200px;left:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(108,99,255,.12) 0%,transparent 70%);pointer-events:none;z-index:0}
+.orb2{position:fixed;bottom:-100px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(66,217,200,.08) 0%,transparent 70%);pointer-events:none;z-index:0}
+.container{max-width:820px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+header{padding:64px 0 48px;text-align:center}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(108,99,255,.15);border:1px solid rgba(108,99,255,.3);border-radius:100px;padding:4px 14px;font-size:11px;font-family:var(--mono);color:#a09aff;letter-spacing:.06em;margin-bottom:24px}
+.badge::before{content:'';width:6px;height:6px;background:#6c63ff;border-radius:50%;box-shadow:0 0 8px #6c63ff;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+h1{font-family:var(--display);font-size:clamp(2.2rem,5vw,3.4rem);font-weight:800;line-height:1.1;letter-spacing:-.03em;margin-bottom:16px}
+h1 span{color:var(--accent)}
+h1 em{color:var(--accent2);font-style:normal}
+.subtitle{color:var(--text2);font-size:15px;max-width:480px;margin:0 auto;line-height:1.7}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:16px;position:relative;overflow:hidden;transition:border-color .2s;animation:fadeUp .4s ease both}
+.card:hover{border-color:var(--border2)}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(108,99,255,.5),transparent)}
+.step-header{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.step-num{width:30px;height:30px;border-radius:8px;background:rgba(108,99,255,.2);border:1px solid rgba(108,99,255,.4);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;color:#a09aff;flex-shrink:0}
+.step-title{font-family:var(--display);font-size:16px;font-weight:600;color:var(--text)}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+@media(max-width:600px){.field-grid{grid-template-columns:1fr}}
+.field label{display:block;font-size:11px;font-family:var(--mono);color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.field input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--mono);font-size:13px;padding:10px 14px;outline:none;transition:border-color .2s,box-shadow .2s}
+.field input:focus{border-color:rgba(108,99,255,.6);box-shadow:0 0 0 3px rgba(108,99,255,.1)}
+.field input::placeholder{color:var(--text3)}
+.server-label,.extras-label{font-size:11px;font-family:var(--mono);color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+.server-group{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.server-opt{flex:1;min-width:140px;cursor:pointer;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;transition:all .2s;position:relative}
+.server-opt:hover{border-color:var(--border2)}
+.server-opt.active{border-color:rgba(108,99,255,.6);background:rgba(108,99,255,.1)}
+.server-opt input{display:none}
+.server-name{font-family:var(--mono);font-size:13px;color:var(--text);margin-bottom:2px}
+.server-opt.active .server-name{color:#a09aff}
+.server-tag{font-size:10px;color:var(--text3)}
+.server-opt.active .server-tag{color:rgba(160,154,255,.7)}
+.rec-tag{position:absolute;top:8px;right:8px;font-size:9px;font-family:var(--mono);background:rgba(66,217,200,.15);color:var(--accent2);border:1px solid rgba(66,217,200,.3);border-radius:4px;padding:2px 6px;letter-spacing:.04em}
+.check-group{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.check-opt{cursor:pointer;display:flex;align-items:center;gap:7px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 14px;font-size:13px;font-family:var(--mono);color:var(--text2);transition:all .2s}
+.check-opt:hover{border-color:var(--border2)}
+.check-opt.active{border-color:rgba(66,217,200,.5);background:rgba(66,217,200,.08);color:var(--accent2)}
+.check-icon{width:14px;height:14px;border-radius:4px;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.check-opt.active .check-icon{background:var(--accent2);border-color:var(--accent2)}
+.check-icon::after{content:'';display:none;width:5px;height:3px;border-left:1.5px solid var(--bg);border-bottom:1.5px solid var(--bg);transform:rotate(-45deg) translateY(-1px)}
+.check-opt.active .check-icon::after{display:block}
+.gen-btn{width:100%;padding:14px;background:linear-gradient(135deg,#6c63ff,#5245e0);border:none;border-radius:var(--radius-sm);color:#fff;font-family:var(--display);font-size:15px;font-weight:600;cursor:pointer;letter-spacing:.01em;position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 20px rgba(108,99,255,.3)}
+.gen-btn:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(108,99,255,.45)}
+.gen-btn:active{transform:scale(.98)}
+.gen-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.1),transparent)}
+.output{display:none}
+.tree-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px 20px;font-family:var(--mono);font-size:12.5px;color:var(--text2);line-height:1.9;white-space:pre;overflow-x:auto}
+.tree-box .dir{color:#a09aff}
+.tree-box .file{color:var(--accent2)}
+.tree-box .tree-sym{color:var(--text3)}
+.cmd-block{margin-bottom:12px}
+.cmd-label{font-size:11px;font-family:var(--mono);color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.cmd-label::before{content:'';display:inline-block;width:20px;height:1px;background:var(--text3)}
+.cmd-lines-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
+.cmd-line{display:flex;align-items:center;gap:12px;padding:9px 14px;border-bottom:1px solid var(--border);transition:background .15s}
+.cmd-line:last-child{border-bottom:none}
+.cmd-line:hover{background:rgba(108,99,255,.05)}
+.cmd-line.copied{background:rgba(66,217,200,.06)}
+.cmd-line.copied .cmd-text{color:var(--text2);text-decoration:line-through;text-decoration-color:rgba(66,217,200,.4)}
+.cmd-status{width:16px;height:16px;flex-shrink:0;border-radius:50%;border:1.5px solid var(--border2);transition:all .25s;display:flex;align-items:center;justify-content:center}
+.cmd-line.copied .cmd-status{background:var(--accent2);border-color:var(--accent2)}
+.cmd-line.copied .cmd-status::after{content:'';display:block;width:5px;height:3px;border-left:1.5px solid #0a0a0f;border-bottom:1.5px solid #0a0a0f;transform:rotate(-45deg) translateY(-1px)}
+.cmd-text{font-family:var(--mono);font-size:12.5px;color:var(--text);white-space:pre;overflow-x:auto;flex:1}
+.cmd-note{margin-top:8px;font-size:12px;color:var(--accent2);background:rgba(66,217,200,.08);border:1px solid rgba(66,217,200,.2);border-radius:var(--radius-sm);padding:7px 12px;display:flex;align-items:center;gap:7px}
+.cmd-note::before{content:'i';font-style:italic;font-size:13px;flex-shrink:0;font-weight:600}
+.copy-btn{flex-shrink:0;background:var(--surface);border:1px solid var(--border2);border-radius:6px;padding:3px 10px;font-size:11px;font-family:var(--mono);color:var(--text3);cursor:pointer;transition:all .15s;white-space:nowrap}
+.copy-btn:hover{border-color:rgba(108,99,255,.5);color:#a09aff}
+.copy-btn.done{border-color:rgba(66,217,200,.5);color:var(--accent2)}
+.cmd-name{color:#a09aff}
+.comm{color:var(--text3);font-style:italic}
+.pkg-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px 20px;font-family:var(--mono);font-size:12.5px;line-height:1.8;overflow-x:auto;white-space:pre}
+.json-key{color:#a09aff}
+.json-str{color:var(--accent2)}
+.json-brace{color:var(--text3)}
+.url-row{display:flex;gap:10px;flex-wrap:wrap}
+.url-pill{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:100px;padding:6px 14px 6px 10px;font-family:var(--mono);font-size:12px;color:var(--text2);text-decoration:none;transition:all .2s}
+.url-pill:hover{border-color:var(--border2);color:var(--text)}
+.url-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.copy-all-btn{width:100%;padding:11px;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);font-family:var(--mono);font-size:13px;cursor:pointer;margin-top:12px;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.copy-all-btn:hover{border-color:rgba(108,99,255,.5);color:#a09aff;background:rgba(108,99,255,.05)}
+.reset-btn{display:block;margin:8px auto 64px;background:none;border:none;color:var(--text3);font-family:var(--mono);font-size:12px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;transition:color .2s}
+.reset-btn:hover{color:var(--text2)}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--surface);border:1px solid rgba(66,217,200,.4);border-radius:100px;color:var(--accent2);font-family:var(--mono);font-size:12px;padding:8px 20px;display:flex;align-items:center;gap:8px;opacity:0;transition:all .25s;pointer-events:none;z-index:100;white-space:nowrap}
+.toast::before{content:'';width:6px;height:6px;background:var(--accent2);border-radius:50%}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+header{animation:fadeUp .5s ease both}
+</style>
+</head>
+<body>
+<div class="orb2"></div>
+<div class="container">
+  <header>
+    <div class="badge">vuegen v2.0</div>
+    <h1>Tu proyecto <span>Vue</span><br>listo en <em>segundos</em></h1>
+    <p class="subtitle">Genera todos los comandos para estructura, pnpm, Git y GitHub Pages. Optimizado para PowerShell en Windows.</p>
+  </header>
+
+  <div class="card">
+    <div class="step-header"><span class="step-num">01</span><span class="step-title">Configura tu proyecto</span></div>
+    <div class="field-grid">
+      <div class="field"><label>Nombre del proyecto</label><input type="text" id="projName" placeholder="mi-proyecto-vue"></div>
+      <div class="field"><label>Usuario de GitHub</label><input type="text" id="ghUser" placeholder="tu-usuario"></div>
+      <div class="field"><label>Descripcion</label><input type="text" id="projDesc" placeholder="Mi proyecto con Vue"></div>
+      <div class="field"><label>Autor</label><input type="text" id="projAuthor" placeholder="Tu Nombre"></div>
+    </div>
+    <p class="server-label">Servidor de desarrollo</p>
+    <div class="server-group">
+      <label class="server-opt active" onclick="selectServer('vite',this)">
+        <input type="radio" name="server" value="vite" checked>
+        <div class="server-name">Vite</div>
+        <div class="server-tag">Moderno y muy rapido</div>
+        <span class="rec-tag">recomendado</span>
+      </label>
+      <label class="server-opt" onclick="selectServer('servor',this)">
+        <input type="radio" name="server" value="servor">
+        <div class="server-name">servor</div>
+        <div class="server-tag">Rapido, ligero, sin config</div>
+      </label>
+      <label class="server-opt" onclick="selectServer('live-server',this)">
+        <input type="radio" name="server" value="live-server">
+        <div class="server-name">live-server</div>
+        <div class="server-tag">Clasico, muy conocido</div>
+      </label>
+    </div>
+    <p class="extras-label">Opciones extra</p>
+    <div class="check-group">
+      <label class="check-opt active" id="chk-ghpages" onclick="toggleCheck(this,'ghpages')"><span class="check-icon"></span>GitHub Pages</label>
+      <label class="check-opt active" id="chk-gitignore" onclick="toggleCheck(this,'gitignore')"><span class="check-icon"></span>.gitignore</label>
+      <label class="check-opt active" id="chk-readme" onclick="toggleCheck(this,'readme')"><span class="check-icon"></span>README.md</label>
+    </div>
+    <button class="gen-btn" onclick="generate()">Generar comandos &rarr;</button>
+  </div>
+
+  <div class="output" id="output">
+    <div class="card">
+      <div class="step-header"><span class="step-num">02</span><span class="step-title">Estructura del proyecto</span></div>
+      <div class="tree-box" id="treeOut"></div>
+    </div>
+    <div class="card">
+      <div class="step-header"><span class="step-num">03</span><span class="step-title">Comandos a ejecutar</span></div>
+      <div id="cmdsOut"></div>
+      <button class="copy-all-btn" onclick="copyAll()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="9" height="9" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M3 11H2a1 1 0 01-1-1V2a1 1 0 011-1h8a1 1 0 011 1v1" stroke="currentColor" stroke-width="1.5"/></svg>
+        Copiar todos los comandos
+      </button>
+    </div>
+    <div class="card">
+      <div class="step-header"><span class="step-num">04</span><span class="step-title">package.json resultante</span></div>
+      <div class="pkg-box" id="pkgOut"></div>
+    </div>
+    <div class="card">
+      <div class="step-header"><span class="step-num">05</span><span class="step-title">URLs del proyecto</span></div>
+      <div class="url-row" id="urlsOut"></div>
+    </div>
+    <button class="reset-btn" onclick="resetForm()">&larr; Nuevo proyecto</button>
+  </div>
+</div>
+<div class="toast" id="toast">Copiado al portapapeles</div>
+
+<script>
+var serverVal = 'vite';
+var checks = { ghpages: true, gitignore: true, readme: true };
+var allGroups = [];
+
+function selectServer(v, el) {
+  serverVal = v;
+  document.querySelectorAll('.server-opt').forEach(function(e){ e.classList.remove('active'); });
+  el.classList.add('active');
+}
+
+function toggleCheck(el, key) {
+  checks[key] = !checks[key];
+  el.classList.toggle('active', checks[key]);
+}
+
+function showToast() {
+  var t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2000);
+}
+
+function markCopied(btn, txt) {
+  navigator.clipboard.writeText(txt).then(function() {
+    var line = btn.closest('.cmd-line');
+    line.classList.add('copied');
+    btn.textContent = 'copiado';
+    btn.classList.add('done');
+    showToast();
+  });
+}
+
+function generate() {
+  var name = (document.getElementById('projName').value.trim() || 'mi-proyecto-vue').toLowerCase().replace(/\s+/g, '-');
+  var user = document.getElementById('ghUser').value.trim() || 'tu-usuario';
+  var desc = document.getElementById('projDesc').value.trim() || 'Mi proyecto Vue';
+  var author = document.getElementById('projAuthor').value.trim() || 'Autor';
+
+  renderTree(name);
+  allGroups = buildCmds(name, user, desc, author);
+  renderCmds(allGroups);
+  renderPkg(name, desc, author);
+  renderUrls(name, user);
+
+  document.getElementById('output').style.display = 'block';
+  setTimeout(function(){ document.getElementById('output').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
+}
+
+function renderTree(name) {
+  var lines = [
+    '<span class="dir">&#128193; ' + name + '/</span>',
+    ' <span class="tree-sym">&#9500;&#9472;&#9472;</span> <span class="dir">&#128193; src/</span>',
+    ' <span class="tree-sym">&#9474;    &#9500;&#9472;&#9472;</span> <span class="dir">&#128193; assets/images/</span>',
+    ' <span class="tree-sym">&#9474;    &#9500;&#9472;&#9472;</span> <span class="dir">&#128193; components/</span>',
+    ' <span class="tree-sym">&#9474;    &#9500;&#9472;&#9472;</span> <span class="dir">&#128193; views/</span>',
+    ' <span class="tree-sym">&#9474;    &#9500;&#9472;&#9472;</span> <span class="file">&#128169; App.vue</span>',
+    ' <span class="tree-sym">&#9474;    &#9492;&#9472;&#9472;</span> <span class="file">&#128230; main.js</span>',
+    ' <span class="tree-sym">&#9500;&#9472;&#9472;</span> <span class="file">&#128196; index.html</span>',
+    ' <span class="tree-sym">&#9500;&#9472;&#9472;</span> <span class="file">&#9881;&#65039;  vite.config.js</span>',
+    checks.gitignore ? ' <span class="tree-sym">&#9500;&#9472;&#9472;</span> <span class="file">&#128196; .gitignore</span>' : null,
+    checks.readme    ? ' <span class="tree-sym">&#9500;&#9472;&#9472;</span> <span class="file">&#128196; README.md</span>' : null,
+    ' <span class="tree-sym">&#9492;&#9472;&#9472;</span> <span class="file">&#128230; package.json</span>',
+  ].filter(Boolean);
+  document.getElementById('treeOut').innerHTML = lines.join('\n');
+}
+
+function buildCmds(name, user, desc, author) {
+  var devDep = serverVal === 'vite' ? 'vite @vitejs/plugin-vue' : serverVal === 'servor' ? 'servor' : 'live-server';
+  var devScript = serverVal === 'vite' ? 'vite' : serverVal === 'servor' ? 'servor src/ index.html 5173 --reload' : 'live-server src/ --port=5173';
+  var groups = [];
+
+  groups.push({ label: '1. Crear carpeta y entrar', lines: ['mkdir ' + name, 'cd ' + name] });
+
+  groups.push({
+    label: '2. Inicializar proyecto con pnpm',
+    lines: [
+      'pnpm init',
+      'pnpm pkg set type=module',
+      'pnpm pkg set name=' + name,
+      'pnpm pkg set description="' + desc + '"',
+      'pnpm pkg set author="' + author + '"'
+    ]
+  });
+
+  var structLines = [
+    'New-Item -ItemType Directory -Force src',
+    'New-Item -ItemType Directory -Force src\\assets',
+    'New-Item -ItemType Directory -Force src\\assets\\images',
+    'New-Item -ItemType Directory -Force src\\components',
+    'New-Item -ItemType Directory -Force src\\views',
+    'New-Item -ItemType File -Force src\\App.vue',
+    'New-Item -ItemType File -Force src\\main.js',
+    'New-Item -ItemType File -Force index.html',
+    'New-Item -ItemType File -Force vite.config.js',
+  ];
+  if (checks.gitignore) structLines.push('New-Item -ItemType File -Force .gitignore');
+  if (checks.readme)    structLines.push('New-Item -ItemType File -Force README.md');
+  groups.push({ label: '3. Crear estructura de archivos', lines: structLines });
+
+  var depLines = ['pnpm add vue', 'pnpm add -D ' + devDep];
+  if (checks.ghpages) depLines.push('pnpm add -D gh-pages');
+  groups.push({ label: '4. Instalar dependencias', lines: depLines });
+
+  groups.push({
+    label: '5. Escribir contenido inicial de los archivos',
+    lines: [
+      "Set-Content vite.config.js \"import { defineConfig } from 'vite'`nimport vue from '@vitejs/plugin-vue'`n`nexport default defineConfig({`n  plugins: [vue()]`n})\"",
+      "Set-Content src/main.js \"import { createApp } from 'vue'`nimport App from './App.vue'`n`ncreateApp(App).mount('#app')\"",
+      "Set-Content src/App.vue \"<template>`n  <div><h1>Hola Vue!</h1></div>`n</template>\"",
+      "Set-Content index.html \"<!DOCTYPE html>`n<html lang='es'>`n<head>`n  <meta charset='UTF-8'>`n  <title>" + name + "</title>`n</head>`n<body>`n  <div id='app'></div>`n  <script type='module' src='/src/main.js'><\\/script>`n</body>`n</html>\""
+    ],
+    note: 'Estos comandos escriben el contenido minimo para que Vite y Vue funcionen correctamente.'
+  });
+
+  var scriptLines = [
+    'pnpm pkg set scripts.dev="' + devScript + '"',
+    'pnpm pkg set scripts.build="vite build"',
+    'pnpm pkg set scripts.preview="vite preview"',
+  ];
+  if (checks.ghpages) scriptLines.push('pnpm pkg set scripts.deploy="vite build && gh-pages -d dist"');
+  groups.push({ label: '6. Configurar scripts en package.json', lines: scriptLines });
+
+  groups.push({
+    label: '7. Inicializar repositorio Git',
+    lines: [
+      'git init',
+      'git config user.name "' + author + '"',
+      'git add .',
+      'git commit -m "Initial commit: Vue project setup"'
+    ]
+  });
+
+  groups.push({
+    label: '8. Conectar a GitHub (HTTPS) — crea el repo en github.com primero',
+    lines: [
+      'git remote add origin https://github.com/' + user + '/' + name + '.git',
+      'git branch -M main',
+      'git push -u origin main'
+    ],
+    note: 'Se abrira una ventana del navegador para iniciar sesion en GitHub. Solo ocurre la primera vez, sin necesidad de llaves SSH.'
+  });
+
+  groups.push({ label: '9. Iniciar servidor de desarrollo', lines: ['pnpm run dev'] });
+  if (checks.ghpages) groups.push({ label: '10. Desplegar en GitHub Pages', lines: ['pnpm run deploy'] });
+
+  return groups;
+}
+
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function highlight(code) {
+  var escaped = esc(code);
+  escaped = escaped.replace(/^(New-Item|Set-Content|mkdir|cd|git|pnpm|npm|node)([\s])/gm, '<span class="cmd-name">$1</span>$2');
+  escaped = escaped.replace(/(#[^\n]*)/g, '<span class="comm">$1</span>');
+  return escaped;
+}
+
+function renderCmds(groups) {
+  var div = document.getElementById('cmdsOut');
+  div.innerHTML = '';
+  groups.forEach(function(g, gi) {
+    var block = document.createElement('div');
+    block.className = 'cmd-block';
+    var noteHtml = g.note ? '<div class="cmd-note">' + g.note + '</div>' : '';
+    var linesHtml = g.lines.map(function(line, li) {
+      var id = 'cmd_' + gi + '_' + li;
+      var escaped = esc(line);
+      return '<div class="cmd-line" id="' + id + '">'
+        + '<span class="cmd-status"></span>'
+        + '<span class="cmd-text">' + highlight(line) + '</span>'
+        + '<button class="copy-btn" data-lineid="' + id + '" data-raw="' + escaped.replace(/"/g,'&quot;') + '" onclick="handleCopy(this)">copiar</button>'
+        + '</div>';
+    }).join('');
+    block.innerHTML = '<div class="cmd-label">' + g.label + '</div><div class="cmd-lines-box">' + linesHtml + '</div>' + noteHtml;
+    div.appendChild(block);
+  });
+}
+
+function handleCopy(btn) {
+  var raw = btn.getAttribute('data-raw');
+  var decoded = raw.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"');
+  navigator.clipboard.writeText(decoded).then(function() {
+    var lineId = btn.getAttribute('data-lineid');
+    var line = document.getElementById(lineId);
+    line.classList.add('copied');
+    btn.textContent = 'copiado';
+    btn.classList.add('done');
+    showToast();
+  });
+}
+
+function renderPkg(name, desc, author) {
+  var devDep = serverVal === 'vite'
+    ? '    <span class="json-key">"vite"</span>: <span class="json-str">"latest"</span>,\n    <span class="json-key">"@vitejs/plugin-vue"</span>: <span class="json-str">"latest"</span>' + (checks.ghpages ? ',\n    <span class="json-key">"gh-pages"</span>: <span class="json-str">"latest"</span>' : '')
+    : '    <span class="json-key">"' + serverVal + '"</span>: <span class="json-str">"latest"</span>' + (checks.ghpages ? ',\n    <span class="json-key">"gh-pages"</span>: <span class="json-str">"latest"</span>' : '');
+  var devScript = serverVal === 'vite' ? 'vite' : serverVal === 'servor' ? 'servor src/ index.html 5173 --reload' : 'live-server src/ --port=5173';
+  document.getElementById('pkgOut').innerHTML =
+    '<span class="json-brace">{</span>\n' +
+    '  <span class="json-key">"name"</span>: <span class="json-str">"' + name + '"</span>,\n' +
+    '  <span class="json-key">"description"</span>: <span class="json-str">"' + desc + '"</span>,\n' +
+    '  <span class="json-key">"type"</span>: <span class="json-str">"module"</span>,\n' +
+    '  <span class="json-key">"author"</span>: <span class="json-str">"' + author + '"</span>,\n' +
+    '  <span class="json-key">"scripts"</span>: <span class="json-brace">{</span>\n' +
+    '    <span class="json-key">"dev"</span>: <span class="json-str">"' + devScript + '"</span>,\n' +
+    '    <span class="json-key">"build"</span>: <span class="json-str">"vite build"</span>,\n' +
+    '    <span class="json-key">"preview"</span>: <span class="json-str">"vite preview"</span>' +
+    (checks.ghpages ? ',\n    <span class="json-key">"deploy"</span>: <span class="json-str">"vite build &amp;&amp; gh-pages -d dist"</span>' : '') + '\n' +
+    '  <span class="json-brace">}</span>,\n' +
+    '  <span class="json-key">"dependencies"</span>: <span class="json-brace">{</span>\n' +
+    '    <span class="json-key">"vue"</span>: <span class="json-str">"latest"</span>\n' +
+    '  <span class="json-brace">}</span>,\n' +
+    '  <span class="json-key">"devDependencies"</span>: <span class="json-brace">{</span>\n' +
+    devDep + '\n' +
+    '  <span class="json-brace">}</span>\n' +
+    '<span class="json-brace">}</span>';
+}
+
+function renderUrls(name, user) {
+  var urls = [
+    { url: 'http://localhost:5173', color: '#a09aff' },
+    { url: 'https://github.com/' + user + '/' + name, color: '#ff9580' },
+  ];
+  if (checks.ghpages) urls.push({ url: 'https://' + user + '.github.io/' + name, color: '#42d9c8' });
+  document.getElementById('urlsOut').innerHTML = urls.map(function(u) {
+    return '<a class="url-pill" href="' + u.url + '" target="_blank"><span class="url-dot" style="background:' + u.color + ';box-shadow:0 0 6px ' + u.color + '"></span>' + u.url + '</a>';
+  }).join('');
+}
+
+function copyAll() {
+  var txt = allGroups.map(function(g){ return '# ' + g.label + '\n' + g.lines.join('\n'); }).join('\n\n');
+  navigator.clipboard.writeText(txt).then(showToast);
+}
+
+function resetForm() {
+  document.getElementById('output').style.display = 'none';
+  ['projName','ghUser','projDesc','projAuthor'].forEach(function(id){ document.getElementById(id).value = ''; });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
